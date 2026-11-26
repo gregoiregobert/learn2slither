@@ -20,7 +20,7 @@ Le projet utilise le **Q-learning** avec une Q-table pour mémoriser les meilleu
 - Exploration et exploitation pour apprendre progressivement.
 - Détection et pénalisation des comportements répétitifs.
 - Sauvegarde et chargement des modèles entraînés.
-- Mode évaluation sans modification du modèle.
+- Évaluation sans modification du modèle.
 - Interface graphique avec pause, vitesse configurable et navigation dans l'historique.
 - Plateaux de dimensions variables, sans réentraînement du modèle.
 
@@ -48,47 +48,129 @@ pip install -r requirements.txt
 
 ## Utilisation
 
-### Entraînement
+Le programme propose trois modes principaux : entraînement, évaluation et exécution d'un modèle.
 
-Entraîner un agent sur 5 000 parties :
+Les arguments disponibles dépendent du mode choisi.
+
+### 1. Entraînement
+
+L'entraînement permet à l'agent d'apprendre progressivement à jouer.
 
 ```bash
 python main.py -episodes 5000 -model models/model_5000.json
 ```
 
-Le modèle est sauvegardé au format JSON dans le dossier `models/`.
+**Arguments associés :**
 
-### Évaluation
+| Argument | Rôle |
+|---|---|
+| `-episodes` | Nombre de parties utilisées pour entraîner l'agent. |
+| `-model` | Chemin du fichier dans lequel sauvegarder le modèle entraîné. |
+| `-width` | Largeur du plateau d'entraînement. |
+| `-height` | Hauteur du plateau d'entraînement. |
 
-Évaluer un modèle sur 100 parties :
+Les arguments `-width` et `-height` sont facultatifs : sans eux, le plateau utilise ses dimensions par défaut.
+
+**Exemples :**
+
+Entraîner sur 100 parties :
+
+```bash
+python main.py -episodes 100 -model models/model_100.json
+```
+
+Entraîner sur un plateau de 20 × 20 :
+
+```bash
+python main.py -episodes 5000 -model models/model_5000.json -width 20 -height 20
+```
+
+Chaque nouvel entraînement crée un agent et une Q-table initialement vides. Il ne reprend pas automatiquement un modèle existant.
+
+### 2. Évaluation
+
+L'évaluation permet de mesurer les performances d'un modèle déjà entraîné, sans modifier ses connaissances.
 
 ```bash
 python main.py -evaluate 100 -model models/model_5000_anti_loop.json
 ```
 
-L'évaluation mesure notamment :
+**Arguments associés :**
+
+| Argument | Rôle |
+|---|---|
+| `-evaluate` | Nombre de parties utilisées pour évaluer le modèle. |
+| `-model` | Chemin du modèle à charger. |
+| `-width` | Largeur du plateau d'évaluation. |
+| `-height` | Hauteur du plateau d'évaluation. |
+
+**Exemples :**
+
+Évaluer sur 500 parties :
+
+```bash
+python main.py -evaluate 500 -model models/model_5000_anti_loop.json
+```
+
+Évaluer le même modèle sur un plateau de 20 × 20 :
+
+```bash
+python main.py -evaluate 100 -model models/model_5000_anti_loop.json -width 20 -height 20
+```
+
+L'évaluation fournit notamment :
+
 - La longueur moyenne maximale du serpent.
 - La meilleure longueur atteinte.
 - Le nombre moyen de déplacements.
-- Le taux de réussite (longueur d'au moins 10).
+- Le nombre et le taux de parties atteignant une longueur de 10.
 
-L'évaluation ne modifie pas le modèle.
+Le modèle reste inchangé pendant toute l'évaluation.
 
-### Interface graphique
+### 3. Exécution d'un modèle
 
-Lancer une partie avec un modèle entraîné :
+L'argument `-dontlearn` permet de charger un modèle existant et de le faire jouer sans effectuer d'apprentissage.
+
+**Arguments associés :**
+
+| Argument | Rôle |
+|---|---|
+| `-dontlearn` | Désactive l'apprentissage et utilise un modèle existant. |
+| `-model` | Chemin du modèle à charger. |
+| `-width` | Largeur du plateau. |
+| `-height` | Hauteur du plateau. |
+| `-gui` | Lance l'interface graphique. |
+| `-speed` | Définit la vitesse de jeu dans l'interface graphique. |
+
+L'interface graphique est facultative : sans `-gui`, le jeu s'exécute dans le terminal.
+
+**Exemples :**
+
+Exécuter le modèle dans le terminal :
+
+```bash
+python main.py -dontlearn -model models/model_5000_anti_loop.json
+```
+
+Lancer l'interface graphique :
 
 ```bash
 python main.py -dontlearn -model models/model_5000_anti_loop.json -gui
 ```
 
-Définir la vitesse de jeu :
+Lancer l'interface avec une vitesse de 30 déplacements par seconde :
 
 ```bash
 python main.py -dontlearn -model models/model_5000_anti_loop.json -gui -speed 30
 ```
 
-Commandes de l'interface :
+Utiliser le modèle sur un plateau de 20 × 20 :
+
+```bash
+python main.py -dontlearn -model models/model_5000_anti_loop.json -gui -width 20 -height 20
+```
+
+**Commandes de l'interface graphique :**
 
 | Touche | Action |
 |---|---|
@@ -99,15 +181,20 @@ Commandes de l'interface :
 | R | Nouvelle partie |
 | Échap | Quitter |
 
-### Modifier la taille du plateau
+### Récapitulatif des arguments
 
-Le modèle peut être utilisé sur différentes dimensions de plateau :
+| Argument | Entraînement | Évaluation | Exécution |
+|---|:---:|:---:|:---:|
+| `-episodes` | ✓ | | |
+| `-evaluate` | | ✓ | |
+| `-dontlearn` | | | ✓ |
+| `-model` | ✓ | ✓ | ✓ |
+| `-width` | ✓ | ✓ | ✓ |
+| `-height` | ✓ | ✓ | ✓ |
+| `-gui` | | | ✓ |
+| `-speed` | | | ✓ |
 
-```bash
-python main.py -dontlearn -model models/model_5000_anti_loop.json -gui -width 20 -height 20
-```
-
-Les dimensions peuvent être modifiées sans réentraîner l'agent.
+Les arguments `-episodes` et `-evaluate` définissent des modes différents : le premier entraîne l'agent, tandis que le second mesure les performances d'un modèle existant.
 
 ## Fonctionnement du Q-learning
 
@@ -120,10 +207,17 @@ L'agent utilise trois éléments principaux :
 - **Récompense :** valeur positive ou négative attribuée selon le résultat de l'action.
 
 L'agent utilise une stratégie d'exploration et d'exploitation :
-- Exploration : essayer de nouvelles actions pour découvrir de meilleures stratégies.
-- Exploitation : choisir les actions qui ont déjà donné les meilleurs résultats.
+
+- **Exploration :** essayer de nouvelles actions pour découvrir de meilleures stratégies.
+- **Exploitation :** choisir les actions qui ont déjà donné les meilleurs résultats.
 
 La Q-table conserve les valeurs apprises pour chaque état et chaque action.
+
+### Détection des boucles
+
+Un mécanisme supplémentaire détecte les répétitions de situations et d'actions.
+
+Lorsqu'un comportement répétitif est identifié pendant l'entraînement, une pénalité est appliquée pour décourager l'agent de rester bloqué dans une boucle.
 
 ## Structure du projet
 
