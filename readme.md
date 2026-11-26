@@ -73,13 +73,7 @@ Les arguments `-width` et `-height` sont facultatifs : sans eux, le plateau util
 
 **Exemples :**
 
-Entraîner sur 100 parties :
-
-```bash
-python main.py -episodes 100 -model models/model_100.json
-```
-
-Entraîner sur un plateau de 20 × 20 :
+Entraîner sur un plateau de 20 × 20, sur 5000 parties :
 
 ```bash
 python main.py -episodes 5000 -model models/model_5000.json -width 20 -height 20
@@ -146,25 +140,9 @@ L'interface graphique est facultative : sans `-gui`, le jeu s'exécute dans le t
 
 **Exemples :**
 
-Exécuter le modèle dans le terminal :
 
-```bash
-python main.py -dontlearn -model models/model_5000_anti_loop.json
-```
 
-Lancer l'interface graphique :
-
-```bash
-python main.py -dontlearn -model models/model_5000_anti_loop.json -gui
-```
-
-Lancer l'interface avec une vitesse de 30 déplacements par seconde :
-
-```bash
-python main.py -dontlearn -model models/model_5000_anti_loop.json -gui -speed 30
-```
-
-Utiliser le modèle sur un plateau de 20 × 20 :
+Utiliser le modèle sur un plateau de 20 × 20, avec interface graphique sans apprentissage :
 
 ```bash
 python main.py -dontlearn -model models/model_5000_anti_loop.json -gui -width 20 -height 20
